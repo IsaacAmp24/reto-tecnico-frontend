@@ -1,0 +1,319 @@
+.appToolbar {
+  --toolbar-height: 54px;
+  --divider-height: 30.39px;
+  --divider-top: 12.37px;
+  --divider-color: rgba(0, 0, 0, 0.05);
+
+  width: 100%;
+  height: var(--toolbar-height);
+  padding: 0 22px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #2e52f8 0%, #56a7f2 100%);
+  box-shadow: 1px 0 4px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.appToolbar__left,
+.appToolbar__right {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  min-width: 0;
+}
+
+.appToolbar__brand {
+  height: 100%;
+  padding: 0 18px 0 0;
+  display: flex;
+  align-items: center;
+  position: relative;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.appToolbar__brand::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: var(--divider-top);
+  width: 1px;
+  height: var(--divider-height);
+  background: var(--divider-color);
+  transform: scaleX(0.75);
+  transform-origin: right center;
+}
+
+.appToolbar__brandLogo {
+  display: block;
+  width: 70px;
+  height: 16.15px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.appToolbar__nav {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  min-width: 0;
+}
+
+.appToolbar__navItem {
+  height: 100%;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  cursor: default;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 400;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.appToolbar__navItemContent {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.appToolbar__navItem::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: var(--divider-top);
+  width: 1px;
+  height: var(--divider-height);
+  background: var(--divider-color);
+  transform: scaleX(0.75);
+  transform-origin: right center;
+}
+
+.appToolbar__navItem:last-child::after {
+  display: none;
+}
+
+.appToolbar__navItem--active {
+  font-weight: 600;
+}
+
+.appToolbar__navItem--active::before {
+  content: "";
+  position: absolute;
+  top: 7px;
+  bottom: 7px;
+  left: 4px;
+  right: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 1;
+}
+
+.appToolbar__navArrow {
+  font-size: 10px;
+}
+
+.appToolbar__right {
+  flex: 0 0 auto;
+}
+
+.appToolbar__iconButton {
+  width: 44px;
+  height: var(--toolbar-height);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: default;
+  flex: 0 0 auto;
+}
+
+.appToolbar__iconButton::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: var(--divider-top);
+  width: 1px;
+  height: var(--divider-height);
+  background: var(--divider-color);
+  transform: scaleX(0.75);
+  transform-origin: left center;
+}
+
+.appToolbar__iconGlyph {
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.appToolbar__iconGlyph--portfolio {
+  width: 16px;
+  height: 14.4px;
+}
+
+.appToolbar__iconGlyph--help {
+  width: 21.4px;
+  height: 21.35px;
+}
+
+.appToolbar__iconGlyph--bell {
+  width: 12px;
+  height: 13.6px;
+}
+
+.appToolbar__iconButton--help {
+  position: relative;
+}
+
+.appToolbar__helpGlow {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.12) 42%,
+      rgba(255, 255, 255, 0.06) 58%,
+      rgba(255, 255, 255, 0) 76%
+    );
+}
+
+.appToolbar__iconButton--notification {
+  position: relative;
+}
+
+
+.appToolbar__user {
+  height: var(--toolbar-height);
+  padding: 0 8px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.appToolbar__user::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: var(--divider-top);
+  width: 1px;
+  height: var(--divider-height);
+  background: var(--divider-color);
+  transform: scaleX(0.75);
+  transform-origin: left center;
+}
+
+.appToolbar__avatarImage {
+  width: 39px;
+  height: 39px;
+  display: block;
+  flex: 0 0 39px;
+  object-fit: contain;
+}
+
+.appToolbar__userName {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.appToolbar__userChevron {
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
+  margin-left: 2px;
+}
+
+.appToolbar__userChevron::before {
+  display: none;
+}
+
+.appToolbar__companySlot {
+  height: var(--toolbar-height);
+  padding-left: 12px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.appToolbar__companySlot::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: var(--divider-top);
+  width: 1px;
+  height: var(--divider-height);
+  background: var(--divider-color);
+  transform: scaleX(0.75);
+  transform-origin: left center;
+}
+
+.appToolbar__companyMark {
+  display: block;
+  width: 87px;
+  height: 34px;
+  flex: 0 0 87px;
+  object-fit: contain;
+}
+
+@media (max-width: 1180px) {
+  .appToolbar {
+    padding: 0 14px;
+  }
+
+  .appToolbar__brand {
+    padding-right: 14px;
+    font-size: 26px;
+  }
+
+  .appToolbar__navItem {
+    padding: 0 10px;
+  }
+
+  .appToolbar__userName {
+    display: none;
+  }
+}
+
+@media (max-width: 980px) {
+  .appToolbar__navItem:nth-child(1),
+  .appToolbar__navItem:nth-child(4) {
+    display: none;
+  }
+}
+
+@media (max-width: 820px) {
+  .appToolbar {
+    padding: 0 10px;
+  }
+
+  .appToolbar__brand {
+    font-size: 24px;
+    padding-right: 10px;
+  }
+
+  .appToolbar__companySlot {
+    display: none;
+  }
+}
