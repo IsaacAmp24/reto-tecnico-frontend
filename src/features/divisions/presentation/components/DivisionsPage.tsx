@@ -13,6 +13,7 @@ export default function DivisionsPage() {
   const {
     searchField,
     setSearchField,
+    searchText,
     setSearchText,
     page,
     setPage,
@@ -55,6 +56,11 @@ export default function DivisionsPage() {
             setSearchField(value);
             setPage(1);
           }}
+          searchText={searchText}
+          onChangeSearchText={(value) => {
+            setSearchText(value);
+            setPage(1);
+          }}
           onSearch={(value) => {
             setSearchText(value ?? "");
             setPage(1);
@@ -68,19 +74,31 @@ export default function DivisionsPage() {
           selectedRowKeys={selectedRowKeys}
           onChangeSelectedRowKeys={setSelectedRowKeys}
           pagination={{
-            current: meta.current_page ?? page,
-            pageSize: meta.per_page ?? perPage,
+            current: page,
+            pageSize: perPage,
             total: meta.total ?? 0,
           }}
-          onChangeTable={({ pagination, filters: antdFilters, sorter }) => {
-            setPage(pagination.current ?? 1);
-            setPerPage(pagination.pageSize ?? 10);
+          onChangeTable={({ pagination, filters: antdFilters, sorter, extra }) => {
+            const nextFilters = mapFilters(antdFilters);
+            const nextSorter = mapSorter(sorter);
 
-            const s = mapSorter(sorter);
-            setSortField(s.field);
-            setSortOrder(s.order);
+            if (extra.action === "paginate") {
+              setPage(pagination.current ?? 1);
+              setPerPage(pagination.pageSize ?? 10);
+              return;
+            }
 
-            setFilters(mapFilters(antdFilters));
+            if (extra.action === "sort") {
+              setPage(1);
+              setSortField(nextSorter.field);
+              setSortOrder(nextSorter.order);
+              return;
+            }
+
+            if (extra.action === "filter") {
+              setPage(1);
+              setFilters(nextFilters);
+            }
           }}
         />
       </section>

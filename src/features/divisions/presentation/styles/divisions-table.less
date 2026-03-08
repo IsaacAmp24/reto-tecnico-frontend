@@ -1,27 +1,21 @@
 .divisionsTableWrapper {
-  .ant-table-wrapper {
-    width: 100%;
-  }
+  width: 1216px;            /* ancho deseado */
+  
+  margin: 0 auto;           /* centrar horizontalmente */
+  
 }
 
 .divisionsTable {
-  .ant-table {
-    background: #fff;
-  }
 
-  .ant-table-container {
-    border: 1px solid #f0f0f0;
-    border-radius: 4px;
-  }
-
+  /* fixed header row height */
   .ant-table-thead > tr > th {
-    height: 44px;
-    padding: 10px 12px;
-    color: #4a4a4a;
-    background: #fff;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 14px;
-    font-weight: 600;
+    height: 25px;
+    padding: 5px 12px; /* reduce vertical padding if needed */
+  }
+
+  /* first data row height */
+  .ant-table-tbody > tr:first-child > td {
+    height: 25px;
   }
 
   .ant-table-tbody > tr > td {
@@ -29,6 +23,14 @@
     color: #555;
     border-bottom: 1px solid #f2f2f2;
     font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    
+  }
+
+  .ant-table-cell {
+    overflow: hidden;
+    
   }
 
   .ant-table-selection-column {
@@ -44,12 +46,10 @@
 
   .ant-table-column-sorters {
     gap: 8px;
+    min-width: 0;
   }
 
-  .ant-pagination {
-    margin-top: 16px;
-    margin-bottom: 0;
-  }
+
 
   .ant-pagination-total-text {
     float: left;
@@ -62,38 +62,36 @@
   }
 }
 
-.divisionFilterIcon {
-  color: #bdbdbd;
-  font-size: 12px;
-
-  &--active {
-    color: #1890ff;
-  }
-}
-
 .divisionColumnFilter {
-  width: 170px;
+  width: 175px;
   padding: 10px;
   background: #fff;
   border-radius: 4px;
+  display: flex;
+  flex-direction: column;
 
   .ant-input-affix-wrapper {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     border-radius: 4px;
   }
 
   &__list {
-    max-height: 160px;
-    overflow: auto;
+    max-height: 150px;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding-right: 4px;
   }
 
   &__item {
+    display: block;
     margin-bottom: 8px;
 
     .ant-checkbox-wrapper {
-      color: #555;
+      display: flex;
+      align-items: center;
+      width: 100%;
       font-size: 13px;
+      color: #555;
     }
   }
 

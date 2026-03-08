@@ -1,6 +1,10 @@
 import { Table } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import type { FilterValue, SorterResult } from "antd/es/table/interface";
+import type {
+  FilterValue,
+  SorterResult,
+  TableCurrentDataSource,
+} from "antd/es/table/interface";
 import type { Division } from "../../domain/division.model";
 
 type Props = {
@@ -14,6 +18,7 @@ type Props = {
     pagination: TablePaginationConfig;
     filters: Record<string, FilterValue | null>;
     sorter: SorterResult<Division> | SorterResult<Division>[];
+    extra: TableCurrentDataSource<Division>;
   }) => void;
 };
 
@@ -34,6 +39,7 @@ export default function DivisionsTable({
         columns={columns}
         dataSource={rows}
         className="divisionsTable"
+        tableLayout="fixed"
         rowSelection={{
           selectedRowKeys,
           onChange: onChangeSelectedRowKeys,
@@ -41,11 +47,20 @@ export default function DivisionsTable({
         }}
         pagination={{
           ...pagination,
-          showSizeChanger: true,
+          showSizeChanger: {
+            showSearch: false,
+          },
           pageSizeOptions: [10, 20, 50],
           showTotal: (total) => `Total registros: ${total}`,
         }}
-        onChange={(p, f, s) => onChangeTable({ pagination: p, filters: f, sorter: s })}
+        onChange={(p, f, s, extra) =>
+          onChangeTable({
+            pagination: p,
+            filters: f,
+            sorter: s,
+            extra,
+          })
+        }
       />
     </div>
   );

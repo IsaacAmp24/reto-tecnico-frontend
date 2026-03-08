@@ -16,13 +16,32 @@ export default function DivisionColumnFilterDropdown({
 }: Props) {
   const [search, setSearch] = useState("");
 
+  const currentSelectedKeys = (selectedKeys ?? []) as (string | number)[];
+
   const filteredOptions = useMemo(() => {
     const term = search.trim().toLowerCase();
+
     if (!term) return options;
+
     return options.filter((option) =>
       String(option).toLowerCase().includes(term)
     );
   }, [options, search]);
+
+  const handleChange = (values: Array<string | number>) => {
+    setSelectedKeys(values as Key[]);
+  };
+
+  const handleReset = () => {
+    setSearch("");
+    clearFilters?.();
+    setSelectedKeys([]);
+    confirm({ closeDropdown: true });
+  };
+
+  const handleConfirm = () => {
+    confirm({ closeDropdown: true });
+  };
 
   return (
     <div className="divisionColumnFilter">
@@ -36,8 +55,9 @@ export default function DivisionColumnFilterDropdown({
 
       <div className="divisionColumnFilter__list">
         <Checkbox.Group
-          value={selectedKeys as (string | number)[]}
-          onChange={(values) => setSelectedKeys(values as Key[])}
+          value={currentSelectedKeys}
+          onChange={handleChange}
+          style={{ width: "100%" }}
         >
           {filteredOptions.map((option) => (
             <div key={String(option)} className="divisionColumnFilter__item">
@@ -51,15 +71,12 @@ export default function DivisionColumnFilterDropdown({
         <Button
           type="link"
           className="divisionColumnFilter__reset"
-          onClick={() => {
-            clearFilters?.();
-            confirm({ closeDropdown: true });
-          }}
+          onClick={handleReset}
         >
           Reiniciar
         </Button>
 
-        <Button type="primary" size="small" onClick={() => confirm({ closeDropdown: true })}>
+        <Button type="primary" size="small" onClick={handleConfirm}>
           OK
         </Button>
       </div>

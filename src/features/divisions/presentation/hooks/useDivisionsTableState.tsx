@@ -1,40 +1,51 @@
 import type { FilterValue, SorterResult } from "antd/es/table/interface";
-import { useState, type Key } from "react";
+import { useMemo, useState, type Key } from "react";
 import type { Division, DivisionListParams } from "../../domain/division.model";
 
 type SearchField = NonNullable<DivisionListParams["search_field"]>;
 type SortField = NonNullable<DivisionListParams["sort_field"]>;
 type SortOrder = NonNullable<DivisionListParams["sort_order"]>;
 
+function isValidSortField(value: unknown): value is SortField {
+  return [
+    "id",
+    "name",
+    "parent_name",
+    "collaborators",
+    "level",
+    "children_count",
+  ].includes(String(value));
+}
+
 function mapSorter(
   sorter: SorterResult<Division> | SorterResult<Division>[]
 ): { field: SortField; order: SortOrder } {
-  const s = Array.isArray(sorter) ? sorter[0] : sorter;
+  const currentSorter = Array.isArray(sorter) ? sorter[0] : sorter;
 
-  const order: SortOrder =
-    s?.order === "descend"
-      ? "desc"
-      : s?.order === "ascend"
-      ? "asc"
-      : "asc";
+  if (!currentSorter?.columnKey || !currentSorter?.order) {
+    return { field: "id", order: "asc" };
+  }
 
-  const field = (s?.columnKey as SortField) || "id";
-
-  return { field, order };
+  return {
+    field: isValidSortField(currentSorter.columnKey)
+      ? currentSorter.columnKey
+      : "id",
+    order: currentSorter.order === "descend" ? "desc" : "asc",
+  };
 }
 
 function mapFilters(
   filters: Record<string, FilterValue | null>
 ): Record<string, (string | number)[]> {
-  const out: Record<string, (string | number)[]> = {};
+  const nextFilters: Record<string, (string | number)[]> = {};
 
   Object.entries(filters).forEach(([key, value]) => {
     if (Array.isArray(value) && value.length > 0) {
-      out[key] = value as (string | number)[];
+      nextFilters[key] = value as (string | number)[];
     }
   });
 
-  return out;
+  return nextFilters;
 }
 
 export function useDivisionsTableState() {
@@ -47,21 +58,21 @@ export function useDivisionsTableState() {
   const [sortField, setSortField] = useState<SortField>("id");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
-  const [filters, setFilters] = useState<Record<string, (string | number)[]>>(
-    {}
-  );
-
+  const [filters, setFilters] = useState<Record<string, (string | number)[]>>({});
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
 
-  const params: DivisionListParams = {
-    page,
-    per_page: perPage,
-    search_field: searchField,
-    search_text: searchText,
-    sort_field: sortField,
-    sort_order: sortOrder,
-    filters,
-  };
+  const params: DivisionListParams = useMemo(
+    () => ({
+      page,
+      per_page: perPage,
+      search_field: searchField,
+      search_text: searchText.trim(),
+      sort_field: sortField,
+      sort_order: sortOrder,
+      filters,
+    }),
+    [page, perPage, searchField, searchText, sortField, sortOrder, filters]
+  );
 
   return {
     searchField,
