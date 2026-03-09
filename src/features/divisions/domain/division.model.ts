@@ -44,3 +44,14 @@ export type DivisionFilterOptions = {
   name: string[];
   parent_name: string[];
 };
+
+export type DivisionUpsertPayload = {
+  name: string;
+  parent_id: number | null;
+  ambassadors: string | null;
+};
+
+export type DivisionOption = {
+  label: string;
+  value: number;
+};

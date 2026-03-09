@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { mapDivisionDto } from "../../domain/division.mapper";
-import type { Division, DivisionDto, DivisionListParams, PaginatedResponse } from "../../domain/division.model";
+import type {
+  Division,
+  DivisionDto,
+  DivisionListParams,
+  PaginatedResponse,
+} from "../../domain/division.model";
 import { getDivisions } from "../../infrastructure/divisions.api";
 
 type State = {
@@ -10,7 +15,10 @@ type State = {
   error: unknown | null;
 };
 
-export function useDivisionsQuery(params: DivisionListParams): State {
+export function useDivisionsQuery(
+  params: DivisionListParams,
+  reloadKey = 0
+): State {
   const [state, setState] = useState<State>({
     rows: [],
     meta: { total: 0, current_page: 1, per_page: 10 },
@@ -20,11 +28,17 @@ export function useDivisionsQuery(params: DivisionListParams): State {
 
   useEffect(() => {
     let alive = true;
-    setState((s) => ({ ...s, loading: true, error: null }));
+
+    setState((prev) => ({
+      ...prev,
+      loading: true,
+      error: null,
+    }));
 
     getDivisions(params)
       .then((res) => {
         if (!alive) return;
+
         setState({
           rows: (res.data ?? []).map(mapDivisionDto),
           meta: res.meta,
@@ -34,13 +48,28 @@ export function useDivisionsQuery(params: DivisionListParams): State {
       })
       .catch((err) => {
         if (!alive) return;
-        setState((s) => ({ ...s, rows: [], loading: false, error: err }));
+
+        setState({
+          rows: [],
+          meta: { total: 0, current_page: 1, per_page: 10 },
+          loading: false,
+          error: err,
+        });
       });
 
     return () => {
       alive = false;
     };
-  }, [JSON.stringify(params)]);
+  }, [
+    params.page,
+    params.per_page,
+    params.search_field,
+    params.search_text,
+    params.sort_field,
+    params.sort_order,
+    JSON.stringify(params.filters ?? {}),
+    reloadKey,
+  ]);
 
   return state;
 }
