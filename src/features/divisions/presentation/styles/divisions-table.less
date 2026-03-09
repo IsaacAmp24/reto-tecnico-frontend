@@ -1,11 +1,13 @@
 .divisionsTableWrapper {
-  width: 1216px;            /* ancho deseado */
+  /* adjust width to accommodate additional action column */
+  width: 1300px;
   
   margin: 0 auto;           /* centrar horizontalmente */
   
 }
 
 .divisionsTable {
+  
 
   /* fixed header row height */
   .ant-table-thead > tr > th {
@@ -20,7 +22,7 @@
 
   .ant-table-tbody > tr > td {
     padding: 12px;
-    color: #555;
+    color: #555155;
     border-bottom: 1px solid #f2f2f2;
     font-size: 14px;
     white-space: nowrap;
@@ -31,6 +33,11 @@
   .ant-table-cell {
     overflow: hidden;
     
+  }
+
+  /* action column icons should be centered */
+  .ant-table-column-cell-actions {
+    text-align: center;
   }
 
   .ant-table-selection-column {
@@ -105,5 +112,28 @@
   &__reset {
     padding: 0;
     color: #1890ff;
+  }
+}
+
+.divisionSubdivisionsCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &__count {
+    border: none;
+    background: transparent;
+    padding: 0;
+    color: #4a4a4a;
+    text-decoration: underline;
+    cursor: pointer;
+    font: inherit;
+  }
+
+  &__add {
+    padding: 0 !important;
+    color: #63d3bd !important;
+    font-size: 14px;
+    line-height: 1;
   }
 }

@@ -2,7 +2,7 @@ import type { FilterValue, SorterResult } from "antd/es/table/interface";
 import { useMemo, useState, type Key } from "react";
 import type { Division, DivisionListParams } from "../../domain/division.model";
 
-type SearchField = NonNullable<DivisionListParams["search_field"]>;
+type SearchField = DivisionListParams["search_field"] | undefined;
 type SortField = NonNullable<DivisionListParams["sort_field"]>;
 type SortOrder = NonNullable<DivisionListParams["sort_order"]>;
 
@@ -49,7 +49,7 @@ function mapFilters(
 }
 
 export function useDivisionsTableState() {
-  const [searchField, setSearchField] = useState<SearchField>("name");
+  const [searchField, setSearchField] = useState<SearchField>(undefined);
   const [searchText, setSearchText] = useState("");
 
   const [page, setPage] = useState(1);
@@ -58,14 +58,16 @@ export function useDivisionsTableState() {
   const [sortField, setSortField] = useState<SortField>("id");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
-  const [filters, setFilters] = useState<Record<string, (string | number)[]>>({});
+  const [filters, setFilters] = useState<Record<string, (string | number)[]>>(
+    {}
+  );
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
 
   const params: DivisionListParams = useMemo(
     () => ({
       page,
       per_page: perPage,
-      search_field: searchField,
+      search_field: searchField ?? "name",
       search_text: searchText.trim(),
       sort_field: sortField,
       sort_order: sortOrder,

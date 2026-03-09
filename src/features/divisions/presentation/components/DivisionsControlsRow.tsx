@@ -1,7 +1,7 @@
 import { Segmented } from "antd";
 import DivisionFiltersBar from "./DivisionsFiltersBar";
 
-type SearchField = "name" | "parent_name" | "ambassadors";
+type SearchField = "name" | "parent_name" | "ambassadors" | undefined;
 type ViewMode = "listado" | "arbol";
 
 type Props = {

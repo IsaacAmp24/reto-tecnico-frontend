@@ -1,4 +1,5 @@
-import { FilterFilled } from "@ant-design/icons";
+import { FilterFilled, PlusCircleFilled } from "@ant-design/icons";
+import { Button } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { SortOrder as AntdSortOrder } from "antd/es/table/interface";
 import { useMemo } from "react";
@@ -8,6 +9,7 @@ import type {
   DivisionListParams,
 } from "../../domain/division.model";
 import DivisionColumnFilterDropdown from "../components/DivisionsColumnFilterDropdown";
+import DivisionsRowActions from "../components/DivisionsRowActions";
 
 type SortField = NonNullable<DivisionListParams["sort_field"]>;
 type SortOrder = NonNullable<DivisionListParams["sort_order"]>;
@@ -26,6 +28,10 @@ type Props = {
   filters: Record<string, (string | number)[]>;
   sortField: SortField;
   sortOrder: SortOrder;
+  onOpenCreateSubdivision: (division: Division) => void;
+  onOpenSubdivisions: (division: Division) => void;
+  onEdit: (division: Division) => void;
+  onDelete: (division: Division) => void;
 };
 
 export function useDivisionColumns({
@@ -33,6 +39,10 @@ export function useDivisionColumns({
   filters,
   sortField,
   sortOrder,
+  onOpenCreateSubdivision,
+  onOpenSubdivisions,
+  onEdit,
+  onDelete,
 }: Props): ColumnsType<Division> {
   return useMemo(() => {
     const nameOptions = filterOptions.name ?? [];
@@ -113,7 +123,25 @@ export function useDivisionColumns({
         width: 215,
         sorter: true,
         sortOrder: toAntdSortOrder("children_count", sortField, sortOrder),
-        render: (value: number) => <span>{value}</span>,
+        render: (value: number, record: Division) => (
+          <div className="divisionSubdivisionsCell">
+            <button
+              type="button"
+              className="divisionSubdivisionsCell__count"
+              onClick={() => onOpenSubdivisions(record)}
+            >
+              {value}
+            </button>
+
+            <Button
+              type="text"
+              className="divisionSubdivisionsCell__add"
+              icon={<PlusCircleFilled />}
+              onClick={() => onOpenCreateSubdivision(record)}
+              aria-label={`Crear subdivisión para ${record.name}`}
+            />
+          </div>
+        ),
       },
       {
         title: "Embajadores",
@@ -121,6 +149,20 @@ export function useDivisionColumns({
         key: "ambassadors",
         ellipsis: { showTitle: true },
         render: (value: string | null) => value ?? "-",
+      },
+      {
+        title: "",
+        key: "actions",
+        width: 60,
+        fixed: "right",
+        className: "ant-table-column-cell-actions",
+        render: (_: unknown, record: Division) => (
+          <DivisionsRowActions
+            record={record}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
+        ),
       },
     ];
   }, [filterOptions, filters, sortField, sortOrder]);

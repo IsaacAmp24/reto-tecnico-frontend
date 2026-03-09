@@ -1,9 +1,11 @@
-import { message } from "antd";
+import { message, Modal } from "antd";
 import { useMemo, useState } from "react";
 import { useDivisionCommands } from "../../application/commands/useDivisionCommands";
 import { useDivisionFilterOptionsQuery } from "../../application/queries/useDivisionFilterOptionsQuery";
+import { useDivisionSubdivisionsQuery } from "../../application/queries/useDivisionSubdivisionsQuery";
 import { useDivisionsQuery } from "../../application/queries/useDivisionsQuery";
 import type {
+  Division,
   DivisionOption,
   DivisionUpsertPayload,
 } from "../../domain/division.model";
@@ -15,6 +17,7 @@ import DivisionsControlsRow from "./DivisionsControlsRow";
 import DivisionsCreateModal from "./DivisionsCreateModal";
 import DivisionsHeader from "./DivisionsHeader";
 import DivisionsHeaderActions from "./DivisionsHeaderActions";
+import DivisionsSubdivisionsDrawer from "./DivisionsSubdivisionsDrawer";
 import DivisionsTable from "./DivisionsTable";
 
 export default function DivisionsPage() {
@@ -41,18 +44,22 @@ export default function DivisionsPage() {
   } = useDivisionsTableState();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createParentId, setCreateParentId] = useState<number | null>(null);
+  const [createModalTitle, setCreateModalTitle] = useState("Crear división");
+  const [lockCreateParent, setLockCreateParent] = useState(false);
+  const [editingDivision, setEditingDivision] = useState<Division | null>(null);
+
   const [reloadKey, setReloadKey] = useState(0);
+
+  const [selectedDivision, setSelectedDivision] = useState<Division | null>(null);
+  const [isSubdivisionsDrawerOpen, setIsSubdivisionsDrawerOpen] = useState(false);
 
   const filterOptions = useDivisionFilterOptionsQuery();
   const { rows, meta, loading } = useDivisionsQuery(params, reloadKey);
-  const { loading: commandLoading, create } = useDivisionCommands();
+  const { loading: commandLoading, create, update, remove } = useDivisionCommands();
 
-  const columns = useDivisionColumns({
-    filterOptions,
-    filters,
-    sortField,
-    sortOrder,
-  });
+  const { rows: subdivisionRows, loading: subdivisionLoading } =
+    useDivisionSubdivisionsQuery(selectedDivision?.id ?? null, isSubdivisionsDrawerOpen);
 
   const parentOptions: DivisionOption[] = useMemo(
     () =>
@@ -64,27 +71,94 @@ export default function DivisionsPage() {
   );
 
   const handleOpenCreateModal = () => {
-    setIsCreateModalOpen(true);
-  };
+  setEditingDivision(null);
+  setCreateParentId(null);
+  setCreateModalTitle("Crear división");
+  setLockCreateParent(false);
+  setIsCreateModalOpen(true);
+};
+
+  const handleOpenCreateSubdivision = (division: Division) => {
+  setCreateParentId(division.id);
+  setCreateModalTitle(`Crear subdivisión de ${division.name}`);
+  setLockCreateParent(true);
+  setIsCreateModalOpen(true);
+};
 
   const handleCloseCreateModal = () => {
     setIsCreateModalOpen(false);
+    setCreateParentId(null);
+    setCreateModalTitle("Crear división");
+    setLockCreateParent(false);
+    setEditingDivision(null);
+  };
+
+  const handleOpenSubdivisions = (division: Division) => {
+    setSelectedDivision(division);
+    setIsSubdivisionsDrawerOpen(true);
+  };
+
+  const handleCloseSubdivisions = () => {
+    setIsSubdivisionsDrawerOpen(false);
+    setSelectedDivision(null);
+  };
+
+  /* new action callbacks */
+  const handleEditDivision = (division: Division) => {
+    setEditingDivision(division);
+    setCreateModalTitle("Editar división");
+    setCreateParentId(division.parentId ?? null);
+    setLockCreateParent(false); // allow changing parent
+    setIsCreateModalOpen(true);
+  };
+
+  const handleDeleteDivision = (division: Division) => {
+    Modal.confirm({
+      title: "Confirmar eliminación",
+      content: `¿Estás seguro que deseas eliminar la división "${division.name}"? Esta acción no se puede deshacer.`,
+      okText: "Eliminar",
+      cancelText: "Cancelar",
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          await remove(division.id);
+          message.success("División eliminada");
+          setReloadKey((prev) => prev + 1);
+        } catch {
+          message.error("No se pudo eliminar la división");
+        }
+      },
+    });
   };
 
   const handleCreateDivision = async (values: DivisionUpsertPayload) => {
     try {
-      await create(values);
-
-      message.success("División creada correctamente");
+      if (editingDivision) {
+        await update(editingDivision.id, values);
+        message.success("División actualizada correctamente");
+      } else {
+        await create(values);
+        message.success("División creada correctamente");
+      }
       setIsCreateModalOpen(false);
-
-      // vuelve a la primera página y fuerza recarga
+      setEditingDivision(null);
       setPage(1);
       setReloadKey((prev) => prev + 1);
     } catch {
-      message.error("No se pudo crear la división");
+      message.error(editingDivision ? "No se pudo actualizar la división" : "No se pudo crear la división");
     }
   };
+
+  const columns = useDivisionColumns({
+    filterOptions,
+    filters,
+    sortField,
+    sortOrder,
+    onOpenCreateSubdivision: handleOpenCreateSubdivision,
+    onOpenSubdivisions: handleOpenSubdivisions,
+    onEdit: handleEditDivision,
+    onDelete: handleDeleteDivision,
+  });
 
   return (
     <div className="divisionsScreen">
@@ -150,11 +224,23 @@ export default function DivisionsPage() {
         />
 
         <DivisionsCreateModal
+          initialDivision={editingDivision}
           open={isCreateModalOpen}
           loading={commandLoading}
+          title={createModalTitle}
           parentOptions={parentOptions}
+          initialParentId={createParentId}
+          lockParent={lockCreateParent}
           onCancel={handleCloseCreateModal}
           onSubmit={handleCreateDivision}
+        />
+
+        <DivisionsSubdivisionsDrawer
+          open={isSubdivisionsDrawerOpen}
+          loading={subdivisionLoading}
+          parentDivisionName={selectedDivision?.name ?? ""}
+          rows={subdivisionRows}
+          onClose={handleCloseSubdivisions}
         />
       </section>
     </div>

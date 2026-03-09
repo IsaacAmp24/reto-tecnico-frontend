@@ -34,3 +34,8 @@ export async function updateDivision(
 export async function deleteDivision(id: number): Promise<void> {
   await http.delete(`/divisions/${id}`);
 }
+
+export async function getDivisionSubdivisions(id: number): Promise<DivisionDto[]> {
+  const { data } = await http.get<DivisionDto[]>(`/divisions/${id}/subdivisions`);
+  return data;
+}

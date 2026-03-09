@@ -1,18 +1,20 @@
+import { SearchOutlined } from "@ant-design/icons";
 import { Input, Select } from "antd";
+import type { DefaultOptionType } from "antd/es/select";
 
-const { Search } = Input;
-
-type SearchField = "name" | "parent_name" | "ambassadors";
+type SearchField = "name" | "parent_name" | "ambassadors" | undefined;
 
 type Props = {
   searchField: SearchField;
   searchText: string;
-  onChangeSearchField: (value: SearchField) => void;
+  onChangeSearchField: (
+    value: "name" | "parent_name" | "ambassadors" | undefined
+  ) => void;
   onChangeSearchText: (value: string) => void;
   onSearch: (value: string) => void;
 };
 
-const searchFieldOptions: Array<{ value: SearchField; label: string }> = [
+const searchFieldOptions: DefaultOptionType[] = [
   { value: "name", label: "División" },
   { value: "parent_name", label: "División superior" },
   { value: "ambassadors", label: "Embajadores" },
@@ -25,37 +27,41 @@ export default function DivisionFiltersBar({
   onChangeSearchText,
   onSearch,
 }: Props) {
-  const handleSearch = (value: string) => {
-    onSearch(value.trim());
-  };
-
-  const handleClearOrChange = (value: string) => {
+  const handleChange = (value: string) => {
     onChangeSearchText(value);
 
-    // opcional pero recomendado:
-    // cuando el usuario limpia el input con allowClear,
-    // se dispara de inmediato una nueva búsqueda vacía.
     if (value === "") {
       onSearch("");
     }
   };
 
+  const handlePressEnter = () => {
+    onSearch(searchText.trim());
+  };
+
   return (
     <div className="divisionFiltersBar">
-      <Select<SearchField>
+      <Select<"name" | "parent_name" | "ambassadors">
         value={searchField}
-        onChange={onChangeSearchField}
+        placeholder="Columnas"
+        allowClear
+        onChange={(value) => onChangeSearchField(value)}
         className="divisionFiltersBar__select"
         options={searchFieldOptions}
       />
 
-      <Search
+      <Input
         placeholder="Buscar"
-        allowClear
         value={searchText}
-        onChange={(event) => handleClearOrChange(event.target.value)}
-        onSearch={handleSearch}
+        onChange={(event) => handleChange(event.target.value)}
+        onPressEnter={handlePressEnter}
         className="divisionFiltersBar__search"
+        suffix={
+          <SearchOutlined
+            className="divisionFiltersBar__searchIcon"
+            onClick={() => onSearch(searchText.trim())}
+          />
+        }
       />
     </div>
   );
