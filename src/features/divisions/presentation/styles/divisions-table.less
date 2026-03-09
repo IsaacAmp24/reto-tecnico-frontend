@@ -1,18 +1,32 @@
 .divisionsTableWrapper {
   /* adjust width to accommodate additional action column */
   width: 1300px;
-  
-  margin: 0 auto;           /* centrar horizontalmente */
-  
+  margin: 0 auto;
 }
 
 .divisionsTable {
-  
+  /* líneas verticales SOLO en los datos */
+  .ant-table-tbody > tr > td {
+    border-right: 1px solid #f0f0f0;
+  }
+
+  .ant-table-tbody > tr > td:last-child {
+    border-right: none;
+  }
+
+  /* quitar cualquier separador vertical del header */
+  .ant-table-thead > tr > th {
+    border-right: none !important;
+  }
+
+  .ant-table-thead > tr > th::before {
+    display: none !important;
+  }
 
   /* fixed header row height */
   .ant-table-thead > tr > th {
     height: 25px;
-    padding: 5px 12px; /* reduce vertical padding if needed */
+    padding: 5px 12px;
   }
 
   /* first data row height */
@@ -27,12 +41,10 @@
     font-size: 14px;
     white-space: nowrap;
     overflow: hidden;
-    
   }
 
   .ant-table-cell {
     overflow: hidden;
-    
   }
 
   /* action column icons should be centered */
@@ -55,8 +67,6 @@
     gap: 8px;
     min-width: 0;
   }
-
-
 
   .ant-pagination-total-text {
     float: left;
